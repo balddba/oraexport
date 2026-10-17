@@ -1,0 +1,5 @@
+### Metadata database health
+GET http://127.0.0.1:8000/api/v1/health
+
+### OpenAPI
+GET http://127.0.0.1:8000/openapi.json
