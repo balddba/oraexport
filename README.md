@@ -65,11 +65,11 @@ Run the following commands from the repository root unless a step changes direct
 
    ```bash
    docker compose up --build -d --wait
-   docker compose exec api oraexport bootstrap-admin --username admin
+   docker compose exec oraexport-api oraexport bootstrap-admin --username admin
    docker compose ps -a
    ```
 
-   The API applies metadata migrations during startup before accepting requests. The worker and frontend wait for the API health check to pass. Run one API process/instance so migrations cannot overlap; migration failures prevent API startup. Bootstrap prompts for a password of at least 12 characters and confirmation, and works only when there are no accounts. The frontend nginx service listens at `127.0.0.1:8080`; configure your TLS proxy to forward the public origin to it. Only the frontend port is published; the API and worker communicate over the Compose network. Check failures with `docker compose logs api worker frontend`.
+   The API applies metadata migrations during startup before accepting requests. The worker and frontend wait for the API health check to pass. Run one API process/instance so migrations cannot overlap; migration failures prevent API startup. Bootstrap prompts for a password of at least 12 characters and confirmation, and works only when there are no accounts. The frontend nginx service listens at `127.0.0.1:8080`; configure your TLS proxy to forward the public origin to it. Only the frontend port is published; the API and worker communicate over the Compose network. Check failures with `docker compose logs oraexport-api oraexport-worker oraexport-frontend`.
 
 4. Sign in, register a database, and click **Test & discover**. Add a direct target service for each selected PDB or non-CDB. For a non-CDB registration, add a target with the same DSN. Discovery lists PDBs and their network services. Use **Add target** beside a discovered PDB to prefill the registration, display name, and a service DSN using the registration’s listener settings. Select another discovered service or edit the DSN as needed; saving verifies the service reaches the selected PDB. If service discovery or DSN suggestion is unavailable, the name and registration are still prefilled and you can enter the DSN manually.
 
@@ -101,7 +101,7 @@ uv run uvicorn oraexport.main:app --host 127.0.0.1 --port 8000
 For a container deployment, run from the repository root:
 
 ```bash
-docker compose stop frontend api worker
+docker compose stop oraexport-frontend oraexport-api oraexport-worker
 docker compose build
 docker compose up -d --wait --remove-orphans
 docker compose ps -a
