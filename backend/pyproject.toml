@@ -1,0 +1,90 @@
+[project]
+name = "oraexport"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+  "fastapi>=0.143.0", "uvicorn>=0.54.0",
+  "oracledb>=3.3", "pydantic-settings>=2.10",
+  "cryptography>=45", "argon2-cffi>=25", "croniter>=6", "httpx>=0.28",
+]
+[dependency-groups]
+dev = [
+    "pytest>=8.4",
+    "ruff>=0.12",
+    "ty>=0.0.88",
+]
+[project.scripts]
+oraexport = "oraexport.cli:main"
+oraexport-worker = "oraexport.worker:main"
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+[tool.pytest.ini_options]
+testpaths = ["../tests/backend"]
+pythonpath = [".", "../tests/backend"]
+markers = ["oracle: requires explicitly configured Oracle test databases"]
+[tool.ruff]
+line-length = 300
+target-version = "py313"
+extend-exclude = [
+  ".agents",
+  ".venv",
+  ".pytest_cache",
+  ".ruff_cache",
+  "dist",
+  "build",
+  "**/__pycache__",
+]
+
+[tool.ruff.lint]
+select = [
+  "D", # Docstrings (pydocstyle).
+  "E", # pycodestyle errors.
+  "F", # Pyflakes.
+  "W", # pycodestyle warnings.
+  "I", # Import sorting (isort).
+  "B", # Common bugs (flake8-bugbear).
+  "RUF", # Ruff-specific rules.
+  "C4", # Comprehensions (flake8-comprehensions).
+  "PIE", # Miscellaneous improvements (flake8-pie).
+  "PT", # Pytest style (flake8-pytest-style).
+  "SIM", # Code simplification.
+  "PERF", # Performance (Perflint).
+  "RET", # Return statements (flake8-return).
+  "N", # Naming conventions (pep8-naming).
+]
+ignore = [
+  "E501", # Line length.
+  "SIM108", # Prefer a ternary operator over an if/else assignment.
+  "PERF203", # try/except inside a loop.
+  "RET504", # Assignment immediately before return.
+  "D203", # Blank line before class docstring (conflicts with D211).
+  "D213", # Multiline docstring summary on the second line.
+  "D401", # Imperative mood in docstring first line.
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = [
+  "fastapi.Depends",
+  "fastapi.Query",
+  "fastapi.Path",
+  "fastapi.Body",
+  "fastapi.Header",
+  "fastapi.Cookie",
+  "fastapi.Form",
+  "fastapi.File",
+  "fastapi.Security",
+  "typer.Option",
+  "typer.Argument",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["oraexport"]
+combine-as-imports = true
+
+[tool.ruff.format]
+line-ending = "lf"
+docstring-code-format = true

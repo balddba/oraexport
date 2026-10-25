@@ -1,0 +1,8 @@
+[environment]
+python-version = "3.13"
+python = "backend/.venv"
+root = ["backend", "tests/backend"]
+
+[src]
+include = ["backend/oraexport", "tests/backend"]
+exclude = ["**/.agents/**"]

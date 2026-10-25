@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>oraexport — Brand & Style Guide</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg"><link rel="alternate icon" href="./favicon.ico">
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --bg-card: #1e293b;
+      --bg-deep: #090d16;
+      --mint: #2dd4bf;
+      --mint-glow: #10b981;
+      --text-white: #ffffff;
+      --text-slate: #94a3b8;
+      --border: #334155;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-white);
+      line-height: 1.6;
+      padding: 2.5rem 1.5rem;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 2rem;
+      margin-bottom: 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .brand-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .brand-title span.ora { color: var(--text-white); }
+    .brand-title span.export { color: var(--mint); }
+
+    .tagline {
+      color: var(--text-slate);
+      font-size: 1.1rem;
+    }
+
+    section {
+      margin-bottom: 3.5rem;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: var(--mint);
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-preview {
+      background: var(--bg-deep);
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 220px;
+    }
+
+    .card-preview.light-preview {
+      background: #f8fafc;
+    }
+
+    .card-preview img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+
+    .card-body {
+      padding: 1.25rem;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+
+    .card-desc {
+      color: var(--text-slate);
+      font-size: 0.9rem;
+    }
+
+    /* Color Swatches */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .swatch-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .swatch-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .swatch-color {
+      height: 90px;
+      width: 100%;
+    }
+
+    .swatch-info {
+      padding: 0.85rem;
+    }
+
+    .swatch-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .swatch-hex {
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: var(--mint);
+    }
+
+    .swatch-role {
+      font-size: 0.75rem;
+      color: var(--text-slate);
+      margin-top: 0.3rem;
+    }
+
+    /* Vector SVG Showcase */
+    .vector-box {
+      background: var(--bg-deep);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .vector-box svg {
+      max-width: 480px;
+      width: 100%;
+      height: auto;
+    }
+
+    /* Code Block */
+    pre {
+      background: #020617;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.85rem;
+      color: #e2e8f0;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+      color: var(--text-slate);
+      font-size: 0.85rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand-title">
+        <span class="ora">ora</span><span class="export">export</span>
+      </div>
+      <p class="tagline">Official Visual Identity & Style System — Oracle Data Pump Export Operations</p>
+    </header>
+
+    <!-- Browser Icon & App Mark -->
+    <section>
+      <h2>Browser Favicon & App Icon</h2>
+      <div class="vector-box">
+        <img src="./favicon-master.png" alt="oraexport Favicon Master" style="max-width: 160px; width: 100%; border-radius: 20px; box-shadow: 0 4px 24px rgba(0,0,0,0.4);">
+      </div>
+      <p style="color: var(--text-slate); font-size: 0.9rem;">
+        Master assets: <code>favicon.ico</code> (32×32 multi-resolution browser icon), <code>favicon-32x32.png</code>, <code>favicon-16x16.png</code>, and <code>apple-touch-icon.png</code> (180×180).
+      </p>
+    </section>
+
+    <!-- Logo Variants -->
+    <section>
+      <h2>Logo Variants</h2>
+      <div class="grid-2">
+        <!-- Sidebar Lockup -->
+        <div class="card">
+          <div class="card-preview">
+            <img src="./oraexport_sidebar_variant.jpg" alt="Horizontal Sidebar Lockup">
+          </div>
+          <div class="card-body">
+            <div class="card-title">A. Horizontal Sidebar Lockup</div>
+            <div class="card-desc">Left-aligned database stream mark with clean two-tone wordmark. Primary header for app navigation sidebars.</div>
+          </div>
+        </div>
+
+        <!-- Stacked Lockup -->
+        <div class="card">
+          <div class="card-preview">
+            <img src="./oraexport_stacked_variant.jpg" alt="Primary Stacked Variant">
+          </div>
+          <div class="card-body">
+            <div class="card-title">B. Primary Stacked Mark</div>
+            <div class="card-desc">Centered emblem with bold typography underneath. Ideal for splash screens, mobile views, and GitHub hero covers.</div>
+          </div>
+        </div>
+
+        <!-- App Icon / Favicon -->
+        <div class="card">
+          <div class="card-preview">
+            <img src="./oraexport_app_icon.jpg" alt="App Icon and Favicon">
+          </div>
+          <div class="card-body">
+            <div class="card-title">C. App Icon & Favicon</div>
+            <div class="card-desc">High-contrast squircle emblem container. Designed for browser tabs, desktop dock icons, and app manifests.</div>
+          </div>
+        </div>
+
+        <!-- Light Mode Variant -->
+        <div class="card">
+          <div class="card-preview light-preview">
+            <img src="./oraexport_light_variant.jpg" alt="Light Mode Variant">
+          </div>
+          <div class="card-body">
+            <div class="card-title">D. Light Mode Lockup</div>
+            <div class="card-desc">Deep ink navy 'ora' with emerald 'export'. Designed for light theme UI, exported audit PDFs, and printed reports.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Color Palette -->
+    <section>
+      <h2>Color Palette</h2>
+      <div class="color-grid">
+        <div class="swatch-card" onclick="navigator.clipboard.writeText('#2DD4BF')">
+          <div class="swatch-color" style="background: #2dd4bf;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Brand Mint</div>
+            <div class="swatch-hex">#2DD4BF</div>
+            <div class="swatch-role">"export" text & active pulse</div>
+          </div>
+        </div>
+
+        <div class="swatch-card" onclick="navigator.clipboard.writeText('#10B981')">
+          <div class="swatch-color" style="background: #10b981;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Emerald Accent</div>
+            <div class="swatch-hex">#10B981</div>
+            <div class="swatch-role">Success badges & streams</div>
+          </div>
+        </div>
+
+        <div class="swatch-card" onclick="navigator.clipboard.writeText('#0F172A')">
+          <div class="swatch-color" style="background: #0f172a; border-bottom: 1px solid var(--border);"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Slate Navy</div>
+            <div class="swatch-hex">#0F172A</div>
+            <div class="swatch-role">Sidebar surface & light "ora"</div>
+          </div>
+        </div>
+
+        <div class="swatch-card" onclick="navigator.clipboard.writeText('#090D16')">
+          <div class="swatch-color" style="background: #090d16; border-bottom: 1px solid var(--border);"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Deep Void</div>
+            <div class="swatch-hex">#090D16</div>
+            <div class="swatch-role">High contrast canvas</div>
+          </div>
+        </div>
+
+        <div class="swatch-card" onclick="navigator.clipboard.writeText('#FFFFFF')">
+          <div class="swatch-color" style="background: #ffffff;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Pure White</div>
+            <div class="swatch-hex">#FFFFFF</div>
+            <div class="swatch-role">"ora" wordmark on dark UI</div>
+          </div>
+        </div>
+
+        <div class="swatch-card" onclick="navigator.clipboard.writeText('#64748B')">
+          <div class="swatch-color" style="background: #64748b;"></div>
+          <div class="swatch-info">
+            <div class="swatch-name">Cool Slate</div>
+            <div class="swatch-hex">#64748B</div>
+            <div class="swatch-role">Borders, secondary text</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Typography -->
+    <section>
+      <h2>Typography Standards</h2>
+      <pre><code>/* Wordmark Typography Rules */
+font-family: -apple-system, BlinkMacSystemFont, "Plus Jakarta Sans", Inter, sans-serif;
+
+.ora {
+  font-weight: 800;
+  color: #FFFFFF; /* Dark theme */
+  letter-spacing: -0.02em;
+}
+
+.export {
+  font-weight: 800;
+  color: #2DD4BF; /* Mint accent */
+  letter-spacing: -0.02em;
+}</code></pre>
+    </section>
+
+    <footer>
+      oraexport Brand System & Style Assets &copy; 2026
+    </footer>
+  </div>
+</body>
+</html>
