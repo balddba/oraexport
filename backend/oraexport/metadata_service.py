@@ -761,7 +761,7 @@ class MetadataService:
             " AND (:until IS NULL OR created_at <= :until)"
             " ORDER BY created_at DESC"
         )
-        binds = {
+        binds: dict[str, str | int | datetime | None] = {
             "state": state or None,
             "task_id": task_id or None,
             "target_id": target_id or None,

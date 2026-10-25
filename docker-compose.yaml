@@ -1,7 +1,18 @@
 services:
   api:
     build: ./backend
-    env_file: .env
+    environment: &backend-environment
+      METADATA_URL: ${METADATA_URL:?Set METADATA_URL}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?Set ENCRYPTION_KEY}
+      ALLOWED_ORIGIN: ${ALLOWED_ORIGIN:-https://localhost}
+      COOKIE_SECURE: ${COOKIE_SECURE:-true}
+      SESSION_HOURS: ${SESSION_HOURS:-12}
+      GLOBAL_CONCURRENCY: ${GLOBAL_CONCURRENCY:-2}
+      TARGET_CONCURRENCY: ${TARGET_CONCURRENCY:-1}
+      POLL_SECONDS: ${POLL_SECONDS:-5}
+      METADATA_POOL_MAX: ${METADATA_POOL_MAX:-10}
+      METADATA_POOL_WAIT_MS: ${METADATA_POOL_WAIT_MS:-5000}
+      METADATA_CALL_TIMEOUT_MS: ${METADATA_CALL_TIMEOUT_MS:-20000}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health', timeout=5)"]
@@ -10,7 +21,7 @@ services:
       retries: 3
   worker:
     build: ./backend
-    env_file: .env
+    environment: *backend-environment
     command: ["oraexport-worker"]
     depends_on:
       api:

@@ -59,7 +59,7 @@ Run the following commands from the repository root unless a step changes direct
    cp .env.example .env
    ```
 
-   Set `METADATA_URL`, `ENCRYPTION_KEY`, and `ALLOWED_ORIGIN` in `.env`. URL-encode the metadata username/password when constructing the Oracle URL, for example `oracle://user:password@host:1521/?service_name=APPMETA` (the `/APPMETA` service-path form also works). Use addresses reachable from inside the containers; `localhost` there refers to the container itself. The origin must exactly match the browser's external HTTPS origin, including any nondefault port, with no trailing slash. Back up the encryption key separately from the metadata database; existing credentials cannot be decrypted without it. Keep `COOKIE_SECURE=true` in production.
+   Set `METADATA_URL`, `ENCRYPTION_KEY`, and `ALLOWED_ORIGIN` in your deployment's environment variables. For local Compose use, you can copy `.env.example` to `.env` as shown above and set the values there instead. A physical `.env` file is optional: Compose passes the configured variables to both the API and worker. URL-encode the metadata username/password when constructing the Oracle URL, for example `oracle://user:password@host:1521/?service_name=APPMETA` (the `/APPMETA` service-path form also works). Use addresses reachable from inside the containers; `localhost` there refers to the container itself. The origin must exactly match the browser's external HTTPS origin, including any nondefault port, with no trailing slash. Back up the encryption key separately from the metadata database; existing credentials cannot be decrypted without it. Keep `COOKIE_SECURE=true` in production.
 
 3. Build and start the services:
 
@@ -121,7 +121,7 @@ uv sync --project backend --locked
 uv run --project backend python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())'
 ```
 
-Edit `backend/.env`: supply the metadata connection URL and generated encryption key, set `COOKIE_SECURE=false`, and set `ALLOWED_ORIGIN=http://localhost:5173`. The backend loads `.env` from its working directory; Compose reads the root `.env`. These are separate files. Run each process in its own terminal:
+Edit `backend/.env`: supply the metadata connection URL and generated encryption key, set `COOKIE_SECURE=false`, and set `ALLOWED_ORIGIN=http://localhost:5173`. The backend reads process environment variables and optionally loads `.env` from its working directory. Compose uses deployment environment variables or the optional root `.env`; the root and backend files are separate. Run each process in its own terminal:
 
 ```bash
 cd backend

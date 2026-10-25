@@ -11,3 +11,6 @@ dist/
 *.pyc
 *.tsbuildinfo
 .agents/
+
+# Local production deployment configuration
+docker-compose.prod.yaml
