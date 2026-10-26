@@ -3,6 +3,7 @@
 This module provides CLI commands for initializing the OraExport system:
 - bootstrap-admin: Creates the initial administrator user interactively without
   exposing passwords on the command line or process list.
+- reset-admin-password: Resets an existing enabled administrator's password.
 - migrate: Applies or previews metadata database DDL schema migrations.
 """
 
@@ -18,12 +19,13 @@ from oraexport.migrations import (
     migrate_configured_database,
     preview_sql,
 )
+from oraexport.models.audit_event import AuditEvent
 from oraexport.models.user import User
 from oraexport.oracle_utilities import OracleUtilities
 
 
 def main() -> None:
-    """Bootstrap the first administrator without command-line password exposure.
+    """Manage administrator credentials without command-line password exposure.
 
     Parses command-line arguments to execute administrative bootstrap workflows.
     Prompting passwords via standard getpass prevents passwords from being logged
@@ -35,7 +37,7 @@ def main() -> None:
     """
     # Configure command-line parser with available subcommands and flags
     parser = argparse.ArgumentParser(description="OraExport administration")
-    parser.add_argument("command", choices=["bootstrap-admin", "migrate"])
+    parser.add_argument("command", choices=["bootstrap-admin", "reset-admin-password", "migrate"])
     parser.add_argument("--username", default="admin")
     parser.add_argument("--dry-run", action="store_true", help="Preview migration SQL")
     parser.add_argument("--upgrade", action="store_true", help="Preview legacy schema upgrade")
@@ -71,6 +73,32 @@ def main() -> None:
     parameters = OracleUtilities.connection_parameters(url=get_settings().metadata_url.get_secret_value())
     db = oracledb.connect(user=parameters.user, password=parameters.password, dsn=parameters.dsn, tcp_connect_timeout=parameters.tcp_connect_timeout)
     try:
+        if args.command == "reset-admin-password":
+            with db.cursor() as cursor:
+                cursor.execute(
+                    statement="SELECT id, role, enabled FROM app_users WHERE username = :username FOR UPDATE",
+                    parameters={"username": args.username},
+                )
+                account = cursor.fetchone()
+                if account is None or account[1] != "admin" or not account[2]:
+                    parser.error(message="Password reset requires an existing enabled administrator")
+                cursor.execute(
+                    statement="UPDATE app_users SET password_hash = :password_hash WHERE id = :user_id",
+                    parameters={"password_hash": EncryptionSerivce.hash_password(value=password), "user_id": account[0]},
+                )
+                cursor.execute(
+                    statement="DELETE FROM login_sessions WHERE user_id = :user_id",
+                    parameters={"user_id": account[0]},
+                )
+                audit = AuditEvent(action="admin_password_reset_cli", resource_id=account[0])
+                cursor.execute(
+                    statement="INSERT INTO audit_events (id, user_id, action, resource_id, created_at) VALUES (:id, :user_id, :action, :resource_id, :created_at)",
+                    parameters=audit.model_dump(mode="python"),
+                )
+            db.commit()
+            print("Administrator password reset. Existing sessions revoked.")
+            return
+
         user_count = MetadataService(db=db).user_count()
         if user_count:
             parser.error(message="Bootstrap is only available before any accounts exist")

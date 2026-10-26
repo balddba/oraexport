@@ -71,6 +71,14 @@ Run the following commands from the repository root unless a step changes direct
 
    The API applies metadata migrations during startup before accepting requests. The worker and frontend wait for the API health check to pass. Run one API process/instance so migrations cannot overlap; migration failures prevent API startup. Bootstrap prompts for a password of at least 12 characters and confirmation, and works only when there are no accounts. The frontend nginx service listens at `127.0.0.1:8080`; configure your TLS proxy to forward the public origin to it. Only the frontend port is published; the API and worker communicate over the Compose network. Check failures with `docker compose logs oraexport-api oraexport-worker oraexport-frontend`.
 
+   If you lose an administrator password, run the following from the Compose project directory (replace `admin` if you use another username):
+
+   ```bash
+   docker compose exec oraexport-api oraexport reset-admin-password --username admin
+   ```
+
+   This prompts privately for a new password of at least 12 characters and confirmation. It updates only an existing enabled administrator, revokes that account's sessions, and records an audit event. Other accounts and export configuration are preserved. It requires server access and the configured metadata database credentials; no existing application password is needed. For an older image, rebuild the API first with `docker compose up -d --build --no-deps oraexport-api`.
+
 4. Sign in, register a database, and click **Test & discover**. Add a direct target service for each selected PDB or non-CDB. For a non-CDB registration, add a target with the same DSN. Discovery lists PDBs and their network services. Use **Add target** beside a discovered PDB to prefill the registration, display name, and a service DSN using the registration’s listener settings. Select another discovered service or edit the DSN as needed; saving verifies the service reaches the selected PDB. If service discovery or DSN suggestion is unavailable, the name and registration are still prefilled and you can enter the DSN manually.
 
    Administrators can use **Edit** on a registration to change its name or service DSN. Saved DBA credentials are retained unless **Replace DBA credentials** is selected; replacements also update targets that inherit them. Target service DSNs and export credentials stay unchanged. After changing connection details, use **Test & discover** again.
