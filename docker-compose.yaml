@@ -33,7 +33,16 @@ services:
     container_name: oraexport-frontend
     build: ./frontend
     ports: ["127.0.0.1:${FRONTEND_PORT:-8080}:8080"]
+    networks:
+      - default
+      - reverse-proxy # Comment this out to disable reverse proxy
     depends_on:
       oraexport-api:
         condition: service_healthy
     restart: unless-stopped
+
+# Coment this out to disable reverse proxy
+networks:
+  reverse-proxy:
+    external: true
+    name: ${PROXY_NETWORK:?Set PROXY_NETWORK}
