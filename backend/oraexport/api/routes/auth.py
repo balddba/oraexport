@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, Request, Response
 
 from oraexport.metadata_service import MetadataService
 from oraexport.models.login_input import LoginInput
+from oraexport.models.password_change_input import PasswordChangeInput
 from oraexport.models.user_input import UserInput
 from oraexport.models.user_response import UserResponse
 
@@ -134,6 +135,18 @@ def logout(
     response.delete_cookie(key="oraexport_session", path="/api/v1")
     logout_status = {"ok": True}
     return logout_status
+
+
+@router.post(path="/api/v1/auth/password")
+def change_password(
+    body: PasswordChangeInput,
+    request: Request,
+    user: Identity,
+    service: MetadataService = Depends(dependency=metadata_service),
+) -> dict[str, bool]:
+    """Change the authenticated user's password and revoke other sessions."""
+    service.change_password(body=body, user=user, token=request.cookies["oraexport_session"])
+    return {"ok": True}
 
 
 @router.get(path="/api/v1/users")

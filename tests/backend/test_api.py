@@ -10,6 +10,7 @@ from dbapi import execute, fetch_records
 from oracle_fakes import remote_connection
 
 import oraexport.bootstrap as bootstrap_module
+from oraexport.config import get_settings
 from oraexport.encryption_serivce import EncryptionSerivce
 from oraexport.models.audit_event import AuditEvent
 from oraexport.models.credential import Credential
@@ -937,6 +938,31 @@ def test_same_origin_and_cookie(client):
     cookie = response.headers["set-cookie"]
     assert "HttpOnly" in cookie
     assert "SameSite=strict" in cookie
+
+
+@pytest.mark.parametrize(
+    argnames=("origin", "fetch_site", "status"),
+    argvalues=[
+        ("http://testserver", "same-origin", 200),
+        ("https://oraexport.aaronslab.net", "same-origin", 200),
+        ("https://oraexport.aaronslab.net.evil.example", "same-origin", 403),
+        ("https://evil.example", "same-origin", 403),
+        ("https://oraexport.aaronslab.net", "cross-site", 403),
+    ],
+)
+def test_multiple_allowed_origins(client, monkeypatch, origin, fetch_site, status):
+    """Accept each configured origin while retaining cross-site mutation protection."""
+    monkeypatch.setattr(
+        target=get_settings(),
+        name="allowed_origin",
+        value="http://testserver, https://oraexport.aaronslab.net, ",
+    )
+    response = client.post(
+        url="/api/v1/auth/login",
+        headers={"Origin": origin, "Sec-Fetch-Site": fetch_site},
+        json={"username": "admin", "password": "a-strong-test-password"},
+    )
+    assert response.status_code == status
 
 
 def test_run_history_and_cancel(client, task):

@@ -62,9 +62,9 @@ def main() -> None:
         parser.error(message="--dry-run is only available for migrate")
 
     # Interactively prompt for admin password to avoid command-line / ps exposure
-    password = getpass.getpass(prompt="Admin password (12+ characters): ")
-    if len(password) < 12:
-        parser.error(message="Password must contain at least 12 characters")
+    password = getpass.getpass(prompt="Admin password (8+ characters): ")
+    if len(password) < 8:
+        parser.error(message="Password must contain at least 8 characters")
     confirmed_password = getpass.getpass(prompt="Confirm password: ")
     if password != confirmed_password:
         parser.error(message="Passwords do not match")

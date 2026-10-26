@@ -34,11 +34,11 @@ def test_reset_changes_password_and_revokes_only_target_sessions(reset_admin, db
     operator, _ = service.login(username="operator", password="a-strong-test-password")
     operator_before = service.user_by_username(username="operator")
 
-    reset_admin()
+    reset_admin(password="eight123")
 
     output = capsys.readouterr().out
     assert "password reset" in output
-    assert "new-strong-admin-password" not in output
+    assert "eight123" not in output
     assert {session["user_id"] for session in db.tables["login_sessions"]} == {operator.id}
     audit = db.tables["audit_events"][-1]
     assert audit["action"] == "admin_password_reset_cli"
@@ -47,7 +47,7 @@ def test_reset_changes_password_and_revokes_only_target_sessions(reset_admin, db
     assert service.user_by_username(username="operator") == operator_before
     with pytest.raises(expected_exception=ApplicationError):
         service.login(username="admin", password="a-strong-test-password")
-    updated, _ = service.login(username="admin", password="new-strong-admin-password")
+    updated, _ = service.login(username="admin", password="eight123")
     assert updated.id == admin.id
     assert updated.role == "admin"
     assert updated.enabled
@@ -68,7 +68,7 @@ def test_reset_rejects_ineligible_accounts(reset_admin, db, username):
     assert db.tables == before
 
 
-@pytest.mark.parametrize(argnames=("password", "confirmation"), argvalues=[("short", "short"), ("new-strong-admin-password", "different")])
+@pytest.mark.parametrize(argnames=("password", "confirmation"), argvalues=[("seven12", "seven12"), ("eight123", "different")])
 def test_reset_rejects_invalid_passwords(reset_admin, db, password, confirmation):
     """Leave persisted credentials untouched for short or mismatched passwords."""
     before = deepcopy(x=db.tables)

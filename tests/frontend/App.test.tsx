@@ -742,6 +742,8 @@ describe("export workflows", () => {
     });
     mount(<App />);
     await screen.findByText("Everything in view.");
+    await userEvent.click(screen.getByRole("button", { name: "Account" }));
+    expect(screen.getByLabelText("Current password")).toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Settings" }),
     ).not.toBeInTheDocument();

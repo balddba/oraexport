@@ -10,6 +10,7 @@ import {
   HardDrive,
   LayoutDashboard,
   LogOut,
+  KeyRound,
   Settings,
   ShieldCheck,
 } from "lucide-react";
@@ -22,6 +23,7 @@ import { Databases } from "./pages/Databases";
 import { Exports } from "./pages/Exports";
 import { History } from "./pages/History";
 import { SettingsPage } from "./pages/Settings";
+import { Account } from "./pages/Account";
 
 export default function App() {
   const client = useQueryClient();
@@ -78,6 +80,7 @@ export default function App() {
     { name: "Databases", icon: Database },
     { name: "Exports", icon: HardDrive },
     { name: "Run history", icon: Activity },
+    { name: "Account", icon: KeyRound },
     ...(admin ? [{ name: "Settings", icon: Settings }] : []),
   ];
   return (
@@ -176,6 +179,7 @@ export default function App() {
           )}
           {screen === "Run history" && <History user={user.data} />}{" "}
           {screen === "Settings" && admin && <SettingsPage />}
+          {screen === "Account" && <Account />}
         </main>
         <footer>
           OraExport{" "}

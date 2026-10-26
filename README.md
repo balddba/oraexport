@@ -69,7 +69,7 @@ Run the following commands from the repository root unless a step changes direct
    docker compose ps -a
    ```
 
-   The API applies metadata migrations during startup before accepting requests. The worker and frontend wait for the API health check to pass. Run one API process/instance so migrations cannot overlap; migration failures prevent API startup. Bootstrap prompts for a password of at least 12 characters and confirmation, and works only when there are no accounts. The frontend nginx service listens at `127.0.0.1:8080`; configure your TLS proxy to forward the public origin to it. Only the frontend port is published; the API and worker communicate over the Compose network. Check failures with `docker compose logs oraexport-api oraexport-worker oraexport-frontend`.
+   The API applies metadata migrations during startup before accepting requests. The worker and frontend wait for the API health check to pass. Run one API process/instance so migrations cannot overlap; migration failures prevent API startup. Bootstrap prompts for a password of at least 8 characters and confirmation, and works only when there are no accounts. The frontend nginx service listens at `127.0.0.1:8080`; configure your TLS proxy to forward the public origin to it. Only the frontend port is published; the API and worker communicate over the Compose network. Check failures with `docker compose logs oraexport-api oraexport-worker oraexport-frontend`.
 
    If you lose an administrator password, run the following from the Compose project directory (replace `admin` if you use another username):
 
@@ -77,7 +77,7 @@ Run the following commands from the repository root unless a step changes direct
    docker compose exec oraexport-api oraexport reset-admin-password --username admin
    ```
 
-   This prompts privately for a new password of at least 12 characters and confirmation. It updates only an existing enabled administrator, revokes that account's sessions, and records an audit event. Other accounts and export configuration are preserved. It requires server access and the configured metadata database credentials; no existing application password is needed. For an older image, rebuild the API first with `docker compose up -d --build --no-deps oraexport-api`.
+   This prompts privately for a new password of at least 8 characters and confirmation. It updates only an existing enabled administrator, revokes that account's sessions, and records an audit event. Other accounts and export configuration are preserved. It requires server access and the configured metadata database credentials; no existing application password is needed. For an older image, rebuild the API first with `docker compose up -d --build --no-deps oraexport-api`.
 
 4. Sign in, register a database, and click **Test & discover**. Add a direct target service for each selected PDB or non-CDB. For a non-CDB registration, add a target with the same DSN. Discovery lists PDBs and their network services. Use **Add target** beside a discovered PDB to prefill the registration, display name, and a service DSN using the registration’s listener settings. Select another discovered service or edit the DSN as needed; saving verifies the service reaches the selected PDB. If service discovery or DSN suggestion is unavailable, the name and registration are still prefilled and you can enter the DSN manually.
 
@@ -90,6 +90,8 @@ Run the following commands from the repository root unless a step changes direct
    Open **Exports**, or **Manage exports** beside a database target, to browse all exports recorded by OraExport for that PDB or non-CDB. The list is paginated and includes outcomes, retained/deleted file counts, recorded dump sizes, and file details. Operators and administrators can confirm **Delete** to permanently remove an export's retained dump and log files while keeping its execution history. Manual deletion can remove the latest successful export regardless of retention policy. Pending, active, and unresolved jobs cannot be deleted. Deletion verifies remote inactivity and exact file ownership; partial failures keep per-file errors and can be retried. Files created outside OraExport are not listed or deleted.
 
 6. Configure SMTP and/or an HTTPS webhook in **Settings**, then save. **Send test notification** queues a real notification through the worker. Check delivery status in the same screen. Use the user-management section to add administrators, operators, or viewers; bootstrap cannot add later accounts.
+
+   Any signed-in user can open **Account** to change their own password. Enter the current password, then enter and confirm a different password of at least 8 characters. A successful change keeps the current browser signed in, signs out the account's other sessions, and records an audit event.
 
 ## Upgrading existing installations
 
@@ -154,7 +156,8 @@ Open [http://localhost:5173](http://localhost:5173). Use that hostname consisten
 | --- | --- | --- |
 | `METADATA_URL` | Required | Oracle URL for the dedicated metadata schema. |
 | `ENCRYPTION_KEY` | Required | Fernet key used for saved database and notification secrets. |
-| `ALLOWED_ORIGIN` | `https://localhost` | Exact browser origin permitted for mutations. |
+| `ALLOWED_ORIGIN` | `https://localhost` | Comma-separated exact browser origins permitted for mutations, e.g. `https://exports.example.com,https://oraexport.aaronslab.net`. Include nondefault ports and omit trailing slashes. |
+| `FRONTEND_PORT` | `8080` | Frontend host port in Docker Compose, bound to `127.0.0.1`. Set in the repository root `.env`. |
 | `COOKIE_SECURE` | `true` | Require HTTPS for session cookies; use `false` for local HTTP. |
 | `SESSION_HOURS` | `12` | Session lifetime, from 1 to 168 hours. |
 | `GLOBAL_CONCURRENCY` | `2` | Maximum active exports across targets. |
@@ -164,7 +167,7 @@ Open [http://localhost:5173](http://localhost:5173). Use that hostname consisten
 | `METADATA_POOL_WAIT_MS` | `5000` | Wait for an available metadata session. |
 | `METADATA_CALL_TIMEOUT_MS` | `20000` | Timeout for a metadata database round trip. |
 
-The backend rejects unknown keys in its `.env` file. `ORAEXPORT_DEV_API` belongs in the frontend shell environment, not the backend `.env`.
+The backend rejects unknown keys in its `.env` file. `FRONTEND_PORT` belongs in the repository root `.env` for Compose, not the backend `.env`. `ORAEXPORT_DEV_API` belongs in the frontend shell environment, not the backend `.env`.
 
 ## Operation and recovery
 

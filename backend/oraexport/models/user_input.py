@@ -30,10 +30,10 @@ class UserInput(LoginInput):
             SecretStr: Validated password meeting length requirements.
 
         Raises:
-            ValueError: If password has fewer than 12 characters.
+            ValueError: If password has fewer than 8 characters.
         """
         secret_str = value.get_secret_value()
-        is_strong = len(secret_str) >= 12
+        is_strong = len(secret_str) >= 8
         if not is_strong:
-            raise ValueError("Password must have at least 12 characters")
+            raise ValueError("Password must have at least 8 characters")
         return value

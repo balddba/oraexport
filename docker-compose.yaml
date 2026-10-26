@@ -1,5 +1,6 @@
 services:
   oraexport-api:
+    container_name: oraexport-api
     build: ./backend
     environment: &backend-environment
       METADATA_URL: ${METADATA_URL:?Set METADATA_URL}
@@ -20,6 +21,7 @@ services:
       timeout: 10s
       retries: 3
   oraexport-worker:
+    container_name: oraexport-worker
     build: ./backend
     environment: *backend-environment
     command: ["oraexport-worker"]
@@ -28,8 +30,9 @@ services:
         condition: service_healthy
     restart: unless-stopped
   oraexport-frontend:
+    container_name: oraexport-frontend
     build: ./frontend
-#    ports: ["127.0.0.1:8080:8080"]
+    ports: ["127.0.0.1:${FRONTEND_PORT:-8080}:8080"]
     depends_on:
       oraexport-api:
         condition: service_healthy

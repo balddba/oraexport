@@ -311,7 +311,7 @@ export function SettingsPage() {
               <input
                 required
                 type="password"
-                minLength={12}
+                minLength={8}
                 name="password"
                 autoComplete="new-password"
               />

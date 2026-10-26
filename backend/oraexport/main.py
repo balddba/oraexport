@@ -60,7 +60,7 @@ async def browser_security(
     """Apply same-origin mutation protection and baseline browser security headers.
 
     Validates that state-changing requests (POST, PUT, DELETE) originate from the
-    trusted origin and rejects cross-site requests. Injects hardening security
+    trusted origins and rejects cross-site requests. Injects hardening security
     headers on all outbound responses.
 
     Args:
@@ -74,8 +74,8 @@ async def browser_security(
     safe_methods = {"GET", "HEAD", "OPTIONS"}
     if request.method not in safe_methods:
         origin = request.headers.get("origin")
-        allowed_origin = get_settings().allowed_origin
-        if origin and origin != allowed_origin:
+        allowed_origins = {value.strip() for value in get_settings().allowed_origin.split(sep=",") if value.strip()}
+        if origin and origin not in allowed_origins:
             error_body = {"detail": "Untrusted request origin"}
             return JSONResponse(status_code=403, content=error_body)
         fetch_site = request.headers.get("sec-fetch-site")

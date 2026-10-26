@@ -21,6 +21,7 @@ from oraexport.models.discovery_response import DiscoveryResponse
 from oraexport.models.export_run import ExportRun
 from oraexport.models.lease import Lease
 from oraexport.models.login_session import LoginSession
+from oraexport.models.password_change_input import PasswordChangeInput
 from oraexport.models.registration import Registration
 from oraexport.models.registration_input import RegistrationInput
 from oraexport.models.registration_update import RegistrationUpdate
@@ -192,6 +193,42 @@ class MetadataService:
         self.record_audit(user=user, action="login", resource_id=user.id)
         self.db.commit()
         return user, token
+
+    def change_password(self, body: PasswordChangeInput, user: User, token: str) -> None:
+        """Verify current credentials and atomically replace the password and revoke other sessions.
+
+        Args:
+            body (PasswordChangeInput): Current and replacement password secrets.
+            user (User): Authenticated account whose password is being changed.
+            token (str): Current browser session token to preserve.
+        """
+        # Serialize credential changes and verify the latest hash rather than the dependency snapshot.
+        with self.db.cursor() as cursor:
+            cursor.execute(
+                statement="SELECT password_hash, enabled FROM app_users WHERE id = :user_id FOR UPDATE",
+                parameters={"user_id": user.id},
+            )
+            rows = cursor.fetchall()
+        if not rows or not rows[0][1]:
+            raise ApplicationError(status_code=401, detail="Login required")
+        current_password = body.current_password.get_secret_value()
+        if not EncryptionSerivce.verify_password(value=current_password, digest=rows[0][0]):
+            raise ApplicationError(status_code=400, detail="Current password is incorrect")
+        new_password = body.new_password.get_secret_value()
+        if new_password == current_password:
+            raise ApplicationError(status_code=400, detail="New password must be different from your current password")
+        password_hash = EncryptionSerivce.hash_password(value=new_password)
+        with self.db.cursor() as cursor:
+            cursor.execute(
+                statement="UPDATE app_users SET password_hash = :password_hash WHERE id = :user_id",
+                parameters={"password_hash": password_hash, "user_id": user.id},
+            )
+            cursor.execute(
+                statement="DELETE FROM login_sessions WHERE user_id = :user_id AND id <> :session_id",
+                parameters={"user_id": user.id, "session_id": EncryptionSerivce.token_hash(token=token)},
+            )
+        self.record_audit(user=user, action="password_changed", resource_id=user.id)
+        self.db.commit()
 
     def logout(self, token: str) -> None:
         """Invalidate a persisted browser session in an explicit transaction.

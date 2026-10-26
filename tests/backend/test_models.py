@@ -14,6 +14,21 @@ from oraexport.models.notification_settings import NotificationSettings
 from oraexport.models.row_tuple import RowTuple
 from oraexport.models.task import Task
 from oraexport.models.user import User
+from oraexport.models.user_input import UserInput
+
+
+@pytest.mark.parametrize(argnames="length", argvalues=[8, 9, 11, 12])
+def test_account_password_accepts_eight_or_more_characters(length):
+    """Accept account passwords starting at the eight-character boundary."""
+    account = UserInput.model_validate(obj={"username": "new-user", "password": "a" * length})
+    assert len(account.password.get_secret_value()) == length
+
+
+@pytest.mark.parametrize(argnames="length", argvalues=[0, 7])
+def test_account_password_rejects_fewer_than_eight_characters(length):
+    """Reject account passwords below the configured minimum."""
+    with pytest.raises(expected_exception=ValidationError, match="at least 8 characters"):
+        UserInput.model_validate(obj={"username": "new-user", "password": "a" * length})
 
 
 def test_model_validates_inputs_and_assignments():

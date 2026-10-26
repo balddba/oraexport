@@ -17,7 +17,7 @@ class Settings(BaseSettings):
         metadata_url (SecretStr): Oracle database connection URL for metadata persistence.
         encryption_key (SecretStr): Base64-encoded Fernet 32-byte key for credential encryption.
         cookie_secure (bool): Whether authentication session cookies require HTTPS.
-        allowed_origin (str): Allowed CORS origin for web client access.
+        allowed_origin (str): Comma-separated exact browser origins permitted for mutations.
         session_hours (int): Connection token expiration lifetime in hours (1-168).
         global_concurrency (int): Maximum concurrent export runs across all database targets.
         target_concurrency (int): Maximum concurrent export runs targeting any single database.
