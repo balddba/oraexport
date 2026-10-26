@@ -32,7 +32,8 @@ services:
   oraexport-frontend:
     container_name: oraexport-frontend
     build: ./frontend
-    ports: ["127.0.0.1:${FRONTEND_PORT:-8080}:8080"]
+#    If using reverse proxy, don't expose port
+#    ports: ["127.0.0.1:${FRONTEND_PORT:-8080}:8080"]
     networks:
       - default
       - reverse-proxy # Comment this out to disable reverse proxy
